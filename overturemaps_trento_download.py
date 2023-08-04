@@ -49,6 +49,11 @@ WHERE
 sql.append(sql_places)
 
 sql_buildings = """ 
+INSTALL spatial;
+INSTALL httpfs;
+LOAD spatial;
+LOAD httpfs;
+SET s3_region='us-west-2';
 COPY (
    SELECT
        	id,
@@ -71,12 +76,17 @@ WHERE
 sql.append(sql_buildings)
 
 sql_transportation_connector = """
+INSTALL spatial;
+INSTALL httpfs;
+LOAD spatial;
+LOAD httpfs;
+SET s3_region='us-west-2';
 COPY (
    SELECT
        	id,
        	ST_GeomFromWkb(geometry) AS geometry
        FROM read_parquet('s3://overturemaps-us-west-2/release/2023-07-26-alpha.0/theme=transportation/type=connector/*', filename=true, hive_partitioning=1)
-WHERE
+   WHERE
   	bbox.minx > 11.041575 
   	and bbox.maxx < 11.191811
   	and bbox.miny > 45.979679
@@ -86,6 +96,11 @@ WHERE
 sql.append(sql_transportation_connector)
 
 sql_roads = """
+INSTALL spatial;
+INSTALL httpfs;
+LOAD spatial;
+LOAD httpfs;
+SET s3_region='us-west-2';
 COPY (
    SELECT
        	id,
@@ -108,6 +123,9 @@ WHERE
 ) TO 'roads_trento.geojson' WITH (FORMAT GDAL, DRIVER 'GeoJSON');
 """
 sql.append(sql_roads)
+
+# s = sql_places
+# duckdb.sql(s)
 
 for s in sql:
     duckdb.sql(s)
