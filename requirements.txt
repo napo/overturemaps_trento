@@ -1,2 +1,0 @@
-duckdb==0.8.1
-geopandas==0.12.2
